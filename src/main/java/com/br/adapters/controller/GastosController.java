@@ -1,9 +1,11 @@
-package com.br.controller;
+package com.br.adapters.controller;
 
-import com.br.dto.request.GastosRequestDTO;
-import com.br.dto.response.GastosResponseDTO;
-import com.br.service.BuscarGastosService;
-import com.br.service.LancarGastosService;
+import com.br.adapters.inbound.dto.GastosFiltrosDTO;
+import com.br.adapters.inbound.dto.GastosRequestDTO;
+import com.br.adapters.inbound.mapper.GastosMapper;
+import com.br.adapters.outbound.dto.GastosResponseDTO;
+import com.br.application.ports.inboud.BuscarGastosPort;
+import com.br.application.ports.inboud.LancarGastosPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,8 +21,9 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/v1/gastos")
 public class GastosController {
 
-    private final BuscarGastosService buscarGastosService;
-    private final LancarGastosService lancarGastosService;
+    private final BuscarGastosPort buscarGastosPort;
+    private final LancarGastosPort lancarGastosPort;
+    private final GastosMapper gastosMapper;
 
 
     @GetMapping()
@@ -28,7 +31,7 @@ public class GastosController {
                                                                @RequestParam(required = false) BigDecimal valor,
                                                                @RequestParam(required = false) Integer ano,
                                                                @RequestParam(required = false) Integer mes) {
-        final var gastosResponseDTOS = buscarGastosService.byParams(nome, valor, ano, mes);
+        final var gastosResponseDTOS = buscarGastosPort.byParams(new GastosFiltrosDTO(nome, valor, ano, mes));
 
         if (gastosResponseDTOS.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -40,6 +43,6 @@ public class GastosController {
     @PostMapping
     public ResponseEntity<GastosResponseDTO> post(@RequestBody @Validated GastosRequestDTO body) {
         return ResponseEntity.status(CREATED)
-                .body(lancarGastosService.start(body));
+                .body(lancarGastosPort.start(gastosMapper.toDomain(body)));
     }
 }

@@ -1,4 +1,4 @@
-package com.br.dto.request;
+package com.br.adapters.inbound.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

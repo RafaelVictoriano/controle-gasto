@@ -1,6 +1,7 @@
-package com.br.repository;
+package com.br.adapters.outbound.repository;
 
-import com.br.entity.Gastos;
+import com.br.adapters.inbound.entity.Gastos;
+import com.br.application.ports.outbound.GastosRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -14,18 +15,19 @@ import static java.util.Objects.nonNull;
 
 @RequiredArgsConstructor
 @Repository
-public class GastosRepository {
+public class GastosRepositoryAdapter implements GastosRepositoryPort {
 
     private final MongoTemplate mongoTemplate;
 
-
-    public Gastos save(Gastos gastos) {
+    @Override
+    public Gastos salvar(Gastos gastos) {
         return mongoTemplate.save(gastos);
     }
 
-    public List<Gastos> findByFilters(Map<String, Object> filters) {
+    @Override
+    public List<Gastos> buscarPorFiltros(Map<String, Object> filtros) {
         final var dynamicQuery = new Query();
-        filters.forEach((key, value) -> {
+        filtros.forEach((key, value) -> {
             if (nonNull(value)) {
                 final var criteria = Criteria.where(key).is(value);
                 dynamicQuery.addCriteria(criteria);

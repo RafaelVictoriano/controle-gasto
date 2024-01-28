@@ -1,4 +1,4 @@
-package com.br.entity;
+package com.br.adapters.inbound.entity;
 
 
 import org.springframework.data.annotation.Id;
